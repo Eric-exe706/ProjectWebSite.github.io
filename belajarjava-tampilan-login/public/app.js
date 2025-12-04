@@ -26,6 +26,10 @@ form.addEventListener("submit", async (event) => {
 
         const result = await response.json();
         setMessage(result.message, response.ok ? 'success' : 'error');
+
+        setTimeout(() => {
+            window.location.href = data.redirect || "/dashboard";
+        }, 1000)
     } catch (error) {
         setMessage("Terjadi kesalahan. Silakan coba lagi.", 'error');
     }
