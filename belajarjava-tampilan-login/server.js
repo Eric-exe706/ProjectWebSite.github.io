@@ -30,7 +30,7 @@ app.post('/api/login', async (req, res) => {
         message: `Login berhasil! Selamat datang, ${user.username}` 
       });
     } else {
-      return res.status(200).json({ 
+      return res.status(401).json({ 
         success: false, 
         message: 'Login gagal. Email atau password salah.' 
       });
