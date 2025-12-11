@@ -27,7 +27,7 @@ app.post('/api/login', async (req, res) => {
       const user = rows[0];
       return res.status(200).json({ 
         success: true, 
-        message: `Login berhasil! Selamat datang, ${user.username}` 
+        message: `Login berhasil! Selamat datang` 
       });
     } else {
       return res.status(401).json({ 
