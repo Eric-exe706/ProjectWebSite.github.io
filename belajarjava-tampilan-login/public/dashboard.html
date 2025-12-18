@@ -1,279 +1,157 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Admin Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Belajar JS</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    :root{
-      --bg:#f5f7fb; --card:#ffffff; --muted:#6b7280; --accent:#2563eb; --success:#10b981; --danger:#ef4444; --glass: rgba(255,255,255,0.6);
-      --radius:12px; --shadow: 0 8px 20px rgba(16,24,40,0.08);
-    }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial;color:#0f172a;background:var(--bg);}
-
-    /* Layout */
-    .app{display:grid;grid-template-columns:260px 1fr;min-height:100vh;}
-    .sidebar{background:linear-gradient(180deg,#0f172a,#0b1220);color:#fff;padding:20px;display:flex;flex-direction:column;gap:16px}
-    .brand{font-weight:700;letter-spacing:0.4px;font-size:18px}
-    .nav{display:flex;flex-direction:column;gap:6px}
-    .nav a{display:flex;gap:12px;align-items:center;padding:10px;border-radius:10px;color:rgba(255,255,255,0.85);text-decoration:none}
-    .nav a.active, .nav a:hover{background:rgba(255,255,255,0.06)}
-    .main{padding:24px}
-    .topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}
-    .search{display:flex;align-items:center;gap:8px;background:var(--card);padding:10px;border-radius:12px;box-shadow:var(--shadow)}
-    .search input{border:0;outline:0;background:transparent}
-
-    /* Grid */
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .card{background:var(--card);padding:16px;border-radius:var(--radius);box-shadow:var(--shadow)}
-    .card h3{margin:0 0 8px 0;font-size:14px;color:var(--muted)}
-    .metric{font-size:22px;font-weight:700}
-
-    /* Table */
-    table{width:100%;border-collapse:collapse}
-    th,td{padding:12px;text-align:left;border-bottom:1px solid #eef2f7}
-    th{font-size:13px;color:var(--muted)}
-
-    /* Responsive */
-    @media (max-width:900px){
-      .app{grid-template-columns:1fr}
-      .sidebar{position:fixed;left:-320px;top:0;height:100vh;z-index:40;transition:all .25s}
-      .sidebar.open{left:0}
-      .main{padding:16px}
-      .grid{grid-template-columns:repeat(1,1fr)}
+    .dashboard-container {
+      max-width: 800px;
+      margin: 50px auto;
+      padding: 40px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
     }
 
-    /* Tiny helpers */
-    .muted{color:var(--muted)}
-    .btn{display:inline-block;padding:8px 12px;border-radius:10px;background:var(--accent);color:#fff;text-decoration:none;border:0;cursor:pointer}
-    .btn.ghost{background:transparent;color:var(--accent);border:1px solid rgba(37,99,235,0.12)}
-    .table-actions{display:flex;gap:8px}
-    .status{padding:6px 10px;border-radius:999px;font-weight:600;font-size:12px}
-    .status.active{background:rgba(16,185,129,0.12);color:var(--success)}
-    .status.pending{background:rgba(245,158,11,0.08);color:#b45309}
-    .empty{padding:36px;border-radius:12px;text-align:center;color:var(--muted)}
+    .welcome-message {
+      font-size: 2rem;
+      color: #333;
+      margin-bottom: 20px;
+    }
 
-    /* footer */
-    .footer{margin-top:18px;color:var(--muted);font-size:13px}
+    .user-info {
+      font-size: 1.2rem;
+      color: #666;
+      margin-bottom: 30px;
+    }
 
-    /* simple modal */
-    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.45);display:none;align-items:center;justify-content:center}
-    .modal{background:var(--card);padding:18px;border-radius:12px;min-width:320px;max-width:720px}
-    .modal.open{display:flex}
+    .dashboard-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
 
+    .btn {
+      padding: 12px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-primary {
+      background-color: #007bff;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #0056b3;
+      transform: translateY(-2px);
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background-color: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .dashboard-icon {
+      font-size: 4rem;
+      margin-bottom: 20px;
+    }
+
+    .info-card {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin: 20px 0;
+      color: #000;
+    }
   </style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="brand">Admin Panel — Ciel</div>
-      <nav class="nav" aria-label="Main Navigation">
-        <a href="#" class="active" data-section="dashboard">🏠 Dashboard</a>
-        <a href="#" data-section="users">👥 Users</a>
-        <a href="#" data-section="settings">⚙️ Settings</a>
-        <a href="#" data-section="reports">📊 Reports</a>
-      </nav>
-      <div style="margin-top:auto;display:flex;gap:8px;align-items:center;">
-        <button class="btn" id="newUserBtn">+ Add user</button>
-        <button class="btn ghost" id="toggleThemeBtn">Toggle theme</button>
-      </div>
-      <div class="footer">© <span id="year"></span> Company — Built with ❤️</div>
-    </aside>
+  <div class="dashboard-container">
+    <h1 class="welcome-message">Selamat Datang!</h1>
+    <div class="user-info">
+      <p>Halo, <strong id="userName">User</strong>!</p>
+      <p>Anda berhasil login ke dashboard.</p>
+    </div>
 
-    <main class="main">
-      <div class="topbar">
-        <div style="display:flex;gap:12px;align-items:center;">
-          <button class="btn ghost" id="menuToggle">☰</button>
-          <div class="search">
-            🔎 <input placeholder="Search users, reports, ..." id="globalSearch" />
-          </div>
-        </div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div class="muted">Signed in as <strong>Ciel</strong></div>
-          <img src="https://api.dicebear.com/6.x/initials/svg?seed=Ciel" alt="avatar" style="width:36px;height:36px;border-radius:10px;"/>
-        </div>
-      </div>
+    <div class="info-card">
+      <h3>Informasi Session</h3>
+      <p>Session ID: <span id="sessionInfo">Active</span></p>
+      <p>Status: <span style="color: green;">Login Berhasil</span></p>
+    </div>
 
-      <section id="dashboard-section">
-        <div class="grid">
-          <div class="card">
-            <h3>Active Users</h3>
-            <div class="metric" id="activeUsers">—</div>
-            <p class="muted">Users active in the last 7 days</p>
-          </div>
-          <div class="card">
-            <h3>New Signups</h3>
-            <div class="metric" id="newSignups">—</div>
-            <p class="muted">Signups this month</p>
-          </div>
-          <div class="card">
-            <h3>Revenue</h3>
-            <div class="metric" id="revenue">—</div>
-            <p class="muted">Estimated MRR</p>
-          </div>
-        </div>
-
-        <div style="margin-top:16px" class="card">
-          <h3>Recent users</h3>
-          <div id="usersTableWrapper"></div>
-        </div>
-      </section>
-
-      <section id="users-section" style="display:none">
-        <div class="card">
-          <h3>All users</h3>
-          <div id="usersTableWrapper2"></div>
-        </div>
-      </section>
-
-      <section id="settings-section" style="display:none">
-        <div class="card">
-          <h3>Settings</h3>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:12px">
-            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="emailNotif"/> Email notifications</label>
-            <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="autoBackup"/> Auto backups</label>
-          </div>
-        </div>
-      </section>
-
-      <section id="reports-section" style="display:none">
-        <div class="card">
-          <h3>Reports</h3>
-          <p class="muted">Export data or filter by date range (demo only).</p>
-        </div>
-      </section>
-
-    </main>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal" role="dialog" aria-modal="true">
-      <h3 id="modalTitle">Add user</h3>
-      <form id="userForm">
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <input name="name" placeholder="Full name" required style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8" />
-          <input name="email" placeholder="Email" type="email" required style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef8" />
-        </div>
-        <div style="margin-top:12px;display:flex;justify-content:flex-end;gap:8px">
-          <button type="button" class="btn ghost" id="cancelModal">Cancel</button>
-          <button type="submit" class="btn">Create</button>
-        </div>
-      </form>
+    <div class="dashboard-actions">
+      <button class="btn btn-primary" onclick="refreshSession()">Refresh Info</button>
+      <button class="btn btn-danger" onclick="logout()">Logout</button>
     </div>
   </div>
 
   <script>
-    // Demo data & utils
-    const demoUsers = [
-      {id:1,name:'Ava Stone',email:'ava@example.com',status:'active',created:'2025-12-01'},
-      {id:2,name:'Liam Chen',email:'liam@example.com',status:'active',created:'2025-12-03'},
-      {id:3,name:'Noah Garcia',email:'noah@example.com',status:'pending',created:'2025-11-28'},
-    ];
+    // Cek session saat halaman dimuat
+    async function checkSession() {
+      try {
+        const response = await fetch('/api/check-session');
+        const data = await response.json();
 
-    function $(sel){return document.querySelector(sel)}
-    function renderUsersTable(target, users){
-      if(!users.length){ target.innerHTML = '<div class="empty">No users yet — add one!</div>'; return }
-      const rows = users.map(u=>`
-        <tr>
-          <td>${u.name}</td>
-          <td>${u.email}</td>
-          <td>${u.created}</td>
-          <td><span class="status ${u.status==='active'?'active':'pending'}">${u.status}</span></td>
-          <td class="table-actions"><button class="btn ghost" onclick="editUser(${u.id})">Edit</button><button class="btn" onclick="deleteUser(${u.id})">Delete</button></td>
-        </tr>
-      `).join('');
-
-      target.innerHTML = `
-        <div style="overflow:auto">
-        <table>
-          <thead><tr><th>Name</th><th>Email</th><th>Joined</th><th>Status</th><th></th></tr></thead>
-          <tbody>${rows}</tbody>
-        </table>
-        </div>
-      `;
-    }
-
-    // state
-    let users = JSON.parse(localStorage.getItem('admin.users')||'null') || demoUsers.slice();
-    function save(){ localStorage.setItem('admin.users', JSON.stringify(users)) }
-
-    // initial render
-    document.getElementById('year').textContent = new Date().getFullYear();
-    renderMetrics();
-    renderUsersTable($('#usersTableWrapper'), users.slice(0,5));
-    renderUsersTable($('#usersTableWrapper2'), users);
-
-    // navigation
-    document.querySelectorAll('.nav a').forEach(a=>a.addEventListener('click', e=>{
-      e.preventDefault(); document.querySelectorAll('.nav a').forEach(x=>x.classList.remove('active'));
-      a.classList.add('active'); const sec = a.dataset.section; showSection(sec);
-    }))
-
-    function showSection(section){
-      ['dashboard','users','settings','reports'].forEach(s=>{
-        const el = document.getElementById(s+'-section'); if(!el) return;
-        el.style.display = (s===section)?'block':'none';
-      })
-    }
-
-    // responsiveness
-    $('#menuToggle').addEventListener('click', ()=>$('#sidebar').classList.toggle('open'))
-
-    // modal
-    const backdrop = $('#modalBackdrop');
-    $('#newUserBtn').addEventListener('click', ()=>{backdrop.style.display='flex';$('#modalTitle').textContent='Add user'});
-    $('#cancelModal').addEventListener('click', ()=>{backdrop.style.display='none'});
-    backdrop.addEventListener('click', (e)=>{ if(e.target===backdrop) backdrop.style.display='none' })
-
-    // form
-    $('#userForm').addEventListener('submit', e=>{
-      e.preventDefault(); const fd = new FormData(e.target); const name = fd.get('name'), email = fd.get('email');
-      const id = users.length?Math.max(...users.map(u=>u.id))+1:1; const created = new Date().toISOString().slice(0,10);
-      users.unshift({id,name,email,status:'active',created}); save(); renderUsersTable($('#usersTableWrapper2'), users); renderUsersTable($('#usersTableWrapper'), users.slice(0,5)); renderMetrics(); backdrop.style.display='none'; e.target.reset();
-    })
-
-    // small actions
-    window.editUser = function(id){ alert('Edit user '+id+' (demo)') }
-    window.deleteUser = function(id){ if(!confirm('Delete user?')) return; users = users.filter(u=>u.id!==id); save(); renderUsersTable($('#usersTableWrapper2'), users); renderUsersTable($('#usersTableWrapper'), users.slice(0,5)); renderMetrics(); }
-
-    // metrics
-    function renderMetrics(){
-      const active = users.filter(u=>u.status==='active').length;
-      const signups = users.filter(u=> new Date(u.created) > new Date(new Date().getTime() - 30*24*3600*1000)).length;
-      const revenue = (active * 12).toLocaleString();
-      $('#activeUsers').textContent = active;
-      $('#newSignups').textContent = signups;
-      $('#revenue').textContent = '$' + revenue;
-    }
-
-    // search
-    $('#globalSearch').addEventListener('input', function(){
-      const q = this.value.trim().toLowerCase(); if(!q){ renderUsersTable($('#usersTableWrapper2'), users); return }
-      const filtered = users.filter(u=>u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q));
-      renderUsersTable($('#usersTableWrapper2'), filtered);
-    })
-
-    // theme toggle (light/dark simulated by inverting colors)
-    const toggleThemeBtn = $('#toggleThemeBtn');
-    toggleThemeBtn.addEventListener('click', ()=>{
-      if(document.documentElement.style.getPropertyValue('--bg')===''){ // first click: set dark
-        document.documentElement.style.setProperty('--bg','#0b1220');
-        document.documentElement.style.setProperty('--card','#071228');
-        document.documentElement.style.setProperty('--muted','#9aa6b2');
-        document.documentElement.style.setProperty('--accent','#60a5fa');
-      } else {
-        document.documentElement.style.removeProperty('--bg');
-        document.documentElement.style.removeProperty('--card');
-        document.documentElement.style.removeProperty('--muted');
-        document.documentElement.style.removeProperty('--accent');
+        if (data.loggedIn) {
+          document.getElementById('userName').textContent = data.user.name || data.user.username;
+        } else {
+          // Jika tidak login, redirect ke halaman login
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error('Error checking session:', error);
       }
-    })
+    }
 
-    // small niceties
-    document.addEventListener('keydown', e=>{ if(e.key==='/' && document.activeElement.tagName!=='INPUT') { e.preventDefault(); $('#globalSearch').focus(); } })
+    // Refresh session info
+    async function refreshSession() {
+      await checkSession();
+      alert('Informasi session berhasil di-refresh!');
+    }
 
+    // Logout function
+    async function logout() {
+      if (confirm('Apakah Anda yakin ingin logout?')) {
+        try {
+          const response = await fetch('/api/logout', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            alert(data.message);
+            window.location.href = '/';
+          } else {
+            alert('Gagal logout: ' + data.message);
+          }
+        } catch (error) {
+          console.error('Error during logout:', error);
+          alert('Terjadi kesalahan saat logout.');
+        }
+      }
+    }
+
+    // Cek session saat halaman dimuat
+    checkSession();
   </script>
 </body>
 </html>
