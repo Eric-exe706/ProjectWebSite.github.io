@@ -310,12 +310,12 @@
         const row = document.createElement('tr');
         
         row.innerHTML = `
-          <td>${user.id}</td>
-          <td>${user.username}</td>
-          <td>${user.password}</td>
+          <td>${user.Id}</td>
+          <td>${user.Username}</td>
+          <td>${user.Password}</td>
           <td class="action-buttons">
-            <button class="btn btn-warning btn-sm" onclick="editUser(${user.id})">Edit</button>
-            <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id}, '${user.username}')">Hapus</button>
+            <button class="btn btn-warning btn-sm" onclick="editUser(${user.Id})">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.Id}, '${user.Username}')">Hapus</button>
           </td>
         `;
         tbody.appendChild(row);

@@ -42,7 +42,7 @@ app.post('/api/login', async (req, res) => {
   try {
     // Query user dari database
     const [rows] = await promisePool.execute(
-      'SELECT * FROM users WHERE username = ? AND password = ?',
+      'SELECT * FROM users WHERE Username = ? AND Password = ?',
       [username, password]
     );
 
