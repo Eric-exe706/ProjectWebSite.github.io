@@ -231,6 +231,36 @@
     <div class="table-container">
       <div id="loadingDiv" class="loading">Memuat data...</div>
       <table id="userTable" style="display: none;">
+                
+        <div id="doctorModal" class="modal">
+          <div class="modal-content">
+            <h3>Tambah Doctor</h3>
+            <input type="hidden" id="doctorUserId">
+
+            <input id="doctorNama" placeholder="Nama">
+            <input id="doctorSpesialis" placeholder="Spesialis">
+            <input id="doctorNoHp" placeholder="No HP">
+
+            <button onclick="saveDoctor()">Simpan</button>
+            <button onclick="closeDoctorModal()">Batal</button>
+          </div>
+        </div>
+
+                        
+        <div id="nurseModal" class="modal">
+          <div class="modal-content">
+            <h3>Tambah Nurse</h3>
+            <input type="hidden" id="nurseUserId">
+
+            <input id="nurseNama" placeholder="Nama">
+            <input id="shift" placeholder="Shift">
+            <input id="nurseNoHp" placeholder="No HP">
+
+            <button onclick="saveNurse()">Simpan</button>
+            <button onclick="closeNurseModal()">Batal</button>
+          </div>
+        </div>
+        
         <thead>
           <tr>
             <th>ID</th>
@@ -256,7 +286,7 @@
       <h2 id="modalTitle">Tambah User Baru</h2>
       <form id="userForm">
         <input type="hidden" id="userId">
-        
+
         <div class="form-group">
           <label for="username">Username *</label>
           <input type="text" id="username" name="username" required>
@@ -347,10 +377,104 @@
           <td class="action-buttons">
             <button class="btn btn-warning btn-sm" onclick="editUser(${user.id})">Edit</button>
             <button class="btn btn-danger btn-sm" onclick="deleteUser(${user.id}, '${user.username}')">Hapus</button>
+            <button onclick="openAddDoctor(${user.id})">+ Doctor</button>
+            <button onclick="openAddNurse(${user.id})">+ Nurse</button>
           </td>
         `;
         tbody.appendChild(row);
       });
+    }
+//doctor function
+    function openAddDoctor(userId) {
+      document.getElementById('doctorUserId').value = userId;
+      document.getElementById('doctorModal').style.display = 'block';
+    }
+
+    function closeDoctorModal() {
+      document.getElementById('doctorModal').style.display = 'none';
+    }
+//nurse
+      function openAddNurse(userId) {
+      document.getElementById('nurseUserId').value = userId;
+      document.getElementById('nurseModal').style.display = 'block';
+    }
+
+    function closeNurseModal() {
+      document.getElementById('nurseModal').style.display = 'none';
+    }
+//doctor add
+    async function saveDoctor() {
+      const userId = document.getElementById('doctorUserId').value;
+      const nama = document.getElementById('doctorNama').value;
+      const spesialis = document.getElementById('doctorSpesialis').value;
+      const no_hp = document.getElementById('doctorNoHp').value;
+
+      if (!nama || !spesialis || !no_hp) {
+        alert('Semua field wajib diisi');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/users/${userId}/doctor`, {
+        method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nama, spesialis, no_hp })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message || 'Doctor berhasil ditambahkan');
+          closeDoctorModal();
+
+          // optional: refresh list doctor
+          // viewDoctors(userId);
+        } else {
+          alert(result.message || 'Gagal menambah doctor');
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert('Terjadi kesalahan server');
+      }
+    }
+
+    //nurse addd
+
+      async function saveNurse() {
+        const userId = document.getElementById('nurseUserId').value;
+        const nama = document.getElementById('nurseNama').value;
+        const shift = document.getElementById('shift').value;
+        const no_hp = document.getElementById('nurseNoHp').value;
+
+      if (!nama || !shift || !no_hp) {
+        alert('Semua field wajib diisi');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/users/${userId}/nurse`, {
+        method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nama, shift, no_hp })
+        });
+
+        const result = await res.json();
+
+        if (result.success) {
+          alert(result.message || 'Nurse berhasil ditambahkan');
+          closeNurseModal();
+
+          // optional: refresh list nurse
+          // viewNurses(userId);
+        } else {
+          alert(result.message || 'Gagal menambah nurses');
+        }
+
+      } catch (err) {
+        console.error(err);
+        alert('Terjadi kesalahan server');
+      }
     }
 
     // Buka modal untuk tambah user

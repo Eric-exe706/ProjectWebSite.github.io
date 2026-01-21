@@ -35,10 +35,17 @@
             <td>${n.nama}</td>
             <td>${n.shift}</td>
             <td>${n.no_hp}</td>
+            <button onclick="deleteNurse(${n.id_nurse})">Hapus</button>
           </tr>
         `;
       });
     }
+    async function deleteNurse(id) {
+  if (!confirm('Hapus Nurse ini?')) return;
+
+  await fetch(`/api/nurse/${id}`, { method: 'DELETE' });
+  alert('Nurse dihapus');
+}
 
     loadNurse();
   </script>

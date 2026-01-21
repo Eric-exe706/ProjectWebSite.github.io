@@ -35,10 +35,17 @@
             <td>${d.nama}</td>
             <td>${d.spesialis}</td>
             <td>${d.no_hp}</td>
+            <button onclick="deleteDoctor(${d.id_dokter})">Hapus</button>
           </tr>
         `;
       });
     }
+    async function deleteDoctor(id) {
+  if (!confirm('Hapus doctor ini?')) return;
+
+  await fetch(`/api/doctor/${id}`, { method: 'DELETE' });
+  alert('Doctor dihapus');
+}
 
     loadDoctor();
   </script>

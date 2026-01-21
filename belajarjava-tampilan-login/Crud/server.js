@@ -156,7 +156,7 @@ app.post('/api/users', requireLogin, async (req, res) => {
 
     return res.json({ 
       success: true, 
-      message: 'User berhasil ditambahkan' + tipe,
+      message: 'User berhasil ditambahkan ' + tipe,
       data: { id: result.insertId, username }
     });
 
@@ -212,6 +212,19 @@ app.put('/api/users/:id', requireLogin, async (req, res) => {
     } else {
       query = 'UPDATE users SET username = ? WHERE id = ?';
       params = [username, userId];
+    }
+
+    if (tipe === 'doctor') {
+      await promisePool.execute(
+        'UPDATE doctor SET nama = ?, spesialis = ?, no_hp = ? WHERE id_user = ?',
+        [nama, spesialis, no_hp, userId]
+      );
+    } 
+    else if (tipe === 'nurse') {
+      await promisePool.execute(
+        'UPDATE nurse SET nama = ?, shift = ?, no_hp = ? WHERE id_user = ?',
+        [nama, shift, no_hp, userId]
+      );
     }
 
     const [result] = await promisePool.execute(query, params);
@@ -271,6 +284,69 @@ app.get('/api/nurses', requireLogin, async (req, res) => {
   }
 });
 
+app.post('/api/users/:id/doctor', requireLogin, async (req, res) => {
+  const userId = req.params.id;
+  const { nama, spesialis, no_hp } = req.body;
+
+  try {
+    await promisePool.execute(
+      'INSERT INTO doctor (id_user, nama, spesialis, no_hp) VALUES (?, ?, ?, ?)',
+      [userId, nama, spesialis, no_hp]
+    );
+
+    res.json({ success: true, message: 'Doctor berhasil ditambahkan' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Gagal tambah doctor' });
+  }
+});
+
+app.post('/api/users/:id/nurse', requireLogin, async (req, res) => {
+  const userId = req.params.id;
+  const { nama, shift, no_hp } = req.body;
+
+  try {
+    await promisePool.execute(
+      'INSERT INTO nurse (id_user, nama, shift, no_hp) VALUES (?, ?, ?, ?)',
+      [userId, nama, shift, no_hp]
+    );
+
+    res.json({ success: true, message: 'Nurse berhasil ditambahkan' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Gagal tambah nurse' });
+  }
+});
+
+
+app.post('/api/users/:id/doctor', requireLogin, async (req, res) => {
+  const userId = req.params.id;
+  const { nama, spesialis, no_hp } = req.body;
+
+  if (!nama || !spesialis || !no_hp) {
+    return res.status(400).json({
+      success: false,
+      message: 'Data doctor tidak lengkap'
+    });
+  }
+
+  try {
+    await promisePool.execute(
+      'INSERT INTO doctor (id_user, nama, spesialis, no_hp) VALUES (?, ?, ?, ?)',
+      [userId, nama, spesialis, no_hp]
+    );
+
+    return res.json({
+      success: true,
+      message: 'Doctor berhasil ditambahkan'
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      success: false,
+      message: 'Gagal menambahkan doctor'
+    });
+  }
+});
+
 // DELETE - Hapus user
 app.delete('/api/users/:id', requireLogin, async (req, res) => {
   const userId = req.params.id;
@@ -292,6 +368,24 @@ app.delete('/api/users/:id', requireLogin, async (req, res) => {
     console.error('Error deleting user:', error);
     res.status(500).json({ success: false, message: 'Gagal menghapus user' });
   }
+});
+
+app.delete('/api/doctor/:id', requireLogin, async (req, res) => {
+  await promisePool.execute(
+    'DELETE FROM doctor WHERE id_dokter = ?',
+    [req.params.id]
+  );
+
+  res.json({ success: true });
+});
+
+app.delete('/api/nurse/:id', requireLogin, async (req, res) => {
+  await promisePool.execute(
+    'DELETE FROM nurse WHERE id_nurse = ?',
+    [req.params.id]
+  );
+
+  res.json({ success: true });
 });
 
 // ===== END API CRUD USER MANAGEMENT =====
