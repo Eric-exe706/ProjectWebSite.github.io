@@ -118,7 +118,7 @@ app.get('/api/users', requireLogin, async (req, res) => {
 
 // POST - Tambah user baru
 app.post('/api/users', requireLogin, async (req, res) => {
-  const { username, password, tipe, nama, spesialis, shfit, no_hp } = req.body;
+  const { username, password, tipe, nama, spesialis, shift, no_hp } = req.body;
 
   if (!username || !password || !tipe) {
     return res.status(400).json({ success: false, message: 'Semua field wajib diisi' });
@@ -149,7 +149,7 @@ app.post('/api/users', requireLogin, async (req, res) => {
 
     if (tipe === 'nurse') {
       await promisePool.execute(
-        'INSERT INTO nurse (id_user, nama, shift, no_hp) VALUES (?, ?, ?)',
+        'INSERT INTO nurse (id_user, nama, shift, no_hp) VALUES (?, ?, ?, ?)',
         [userId, nama, shift, no_hp]
       );
     }
@@ -159,7 +159,7 @@ app.post('/api/users', requireLogin, async (req, res) => {
       message: 'User berhasil ditambahkan' + tipe,
       data: { id: result.insertId, username }
     });
-    
+
   } catch (error) {
     console.error('Error creating user:', error);
     res.status(500).json({ success: false, message: 'Gagal menambahkan user' });
@@ -224,6 +224,50 @@ app.put('/api/users/:id', requireLogin, async (req, res) => {
   } catch (error) {
     console.error('Error updating user:', error);
     res.status(500).json({ success: false, message: 'Gagal mengupdate user' });
+  }
+});
+
+// GET - List doctor
+app.get('/api/doctors', requireLogin, async (req, res) => {
+  try {
+    const [rows] = await promisePool.execute(`
+      SELECT 
+        d.id_dokter,
+        u.username,
+        d.nama,
+        d.spesialis,
+        d.no_hp
+      FROM doctor d
+      JOIN users u ON d.id_user = u.id
+      ORDER BY d.id_dokter DESC
+    `);
+
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Gagal ambil data doctor' });
+  }
+});
+
+// GET - List nurse
+app.get('/api/nurses', requireLogin, async (req, res) => {
+  try {
+    const [rows] = await promisePool.execute(`
+      SELECT 
+        n.id_nurse,
+        u.username,
+        n.nama,
+        n.shift,
+        n.no_hp
+      FROM nurse n
+      JOIN users u ON n.id_user = u.id
+      ORDER BY n.id_nurse DESC
+    `);
+
+    res.json({ success: true, data: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Gagal ambil data nurse' });
   }
 });
 

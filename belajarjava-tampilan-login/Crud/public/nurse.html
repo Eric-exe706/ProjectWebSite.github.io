@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>List Nurse</title>
+</head>
+<body>
+  <h1>👩‍⚕️ List Nurse</h1>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Nama</th>
+        <th>Shift</th>
+        <th>No HP</th>
+      </tr>
+    </thead>
+    <tbody id="nurseBody"></tbody>
+  </table>
+
+  <script>
+    async function loadNurse() {
+      const res = await fetch('/api/nurses');
+      const result = await res.json();
+
+      const body = document.getElementById('nurseBody');
+      body.innerHTML = '';
+
+      result.data.forEach(n => {
+        body.innerHTML += `
+          <tr>
+            <td>${n.id_nurse}</td>
+            <td>${n.username}</td>
+            <td>${n.nama}</td>
+            <td>${n.shift}</td>
+            <td>${n.no_hp}</td>
+          </tr>
+        `;
+      });
+    }
+
+    loadNurse();
+  </script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>List Doctor</title>
+</head>
+<body>
+  <h1>👨‍⚕️ List Doctor</h1>
+
+  <table border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Nama</th>
+        <th>Spesialis</th>
+        <th>No HP</th>
+      </tr>
+    </thead>
+    <tbody id="doctorBody"></tbody>
+  </table>
+
+  <script>
+    async function loadDoctor() {
+      const res = await fetch('/api/doctors');
+      const result = await res.json();
+
+      const body = document.getElementById('doctorBody');
+      body.innerHTML = '';
+
+      result.data.forEach(d => {
+        body.innerHTML += `
+          <tr>
+            <td>${d.id_dokter}</td>
+            <td>${d.username}</td>
+            <td>${d.nama}</td>
+            <td>${d.spesialis}</td>
+            <td>${d.no_hp}</td>
+          </tr>
+        `;
+      });
+    }
+
+    loadDoctor();
+  </script>
+</body>
+</html>
