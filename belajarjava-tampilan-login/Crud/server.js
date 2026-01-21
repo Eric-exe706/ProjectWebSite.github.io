@@ -42,7 +42,7 @@ app.post('/api/login', async (req, res) => {
   try {
     // Query user dari database
     const [rows] = await promisePool.execute(
-      'SELECT * FROM users WHERE Username = ? AND Password = ?',
+      'SELECT * FROM users WHERE username = ? AND password = ?',
       [username, password]
     );
 
@@ -118,9 +118,9 @@ app.get('/api/users', requireLogin, async (req, res) => {
 
 // POST - Tambah user baru
 app.post('/api/users', requireLogin, async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, tipe, nama, spesialis, shfit, no_hp } = req.body;
 
-  if (!username || !password) {
+  if (!username || !password || !tipe) {
     return res.status(400).json({ success: false, message: 'Semua field wajib diisi' });
   }
 
@@ -137,11 +137,29 @@ app.post('/api/users', requireLogin, async (req, res) => {
       [username, password]
     );
 
-    res.json({ 
+    const userId = result.insertId;
+
+    // insert ke doctor atau nurse
+    if (tipe === 'doctor') {
+      await promisePool.execute(
+        'INSERT INTO doctor (id_user, nama, spesialis, no_hp) VALUES (?, ?, ?, ?)',
+        [userId, nama, spesialis, no_hp]
+      );
+    }
+
+    if (tipe === 'nurse') {
+      await promisePool.execute(
+        'INSERT INTO nurse (id_user, nama, shift, no_hp) VALUES (?, ?, ?)',
+        [userId, nama, shift, no_hp]
+      );
+    }
+
+    return res.json({ 
       success: true, 
-      message: 'User berhasil ditambahkan',
+      message: 'User berhasil ditambahkan' + tipe,
       data: { id: result.insertId, username }
     });
+    
   } catch (error) {
     console.error('Error creating user:', error);
     res.status(500).json({ success: false, message: 'Gagal menambahkan user' });
