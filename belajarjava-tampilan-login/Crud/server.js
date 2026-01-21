@@ -118,9 +118,9 @@ app.get('/api/users', requireLogin, async (req, res) => {
 
 // POST - Tambah user baru
 app.post('/api/users', requireLogin, async (req, res) => {
-  const { username, password, tipe, nama, spesialis, shift, no_hp } = req.body;
+  const { username, password } = req.body;
 
-  if (!username || !password || !tipe) {
+  if (!username || !password) {
     return res.status(400).json({ success: false, message: 'Semua field wajib diisi' });
   }
 
@@ -137,26 +137,9 @@ app.post('/api/users', requireLogin, async (req, res) => {
       [username, password]
     );
 
-    const userId = result.insertId;
-
-    // insert ke doctor atau nurse
-    if (tipe === 'doctor') {
-      await promisePool.execute(
-        'INSERT INTO doctor (id_user, nama, spesialis, no_hp) VALUES (?, ?, ?, ?)',
-        [userId, nama, spesialis, no_hp]
-      );
-    }
-
-    if (tipe === 'nurse') {
-      await promisePool.execute(
-        'INSERT INTO nurse (id_user, nama, shift, no_hp) VALUES (?, ?, ?, ?)',
-        [userId, nama, shift, no_hp]
-      );
-    }
-
     return res.json({ 
       success: true, 
-      message: 'User berhasil ditambahkan ' + tipe,
+      message: 'User berhasil ditambahkan ',
       data: { id: result.insertId, username }
     });
 

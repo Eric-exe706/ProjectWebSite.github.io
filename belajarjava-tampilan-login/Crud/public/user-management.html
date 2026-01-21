@@ -297,35 +297,6 @@
           <input type="password" id="password" name="password">
         </div>
 
-        <div class="form-group">
-          <label for="tipe">Jenis User *</label>
-          <select id="tipe" name="tipe" required>
-            <option value="">-- Pilih --</option>
-            <option value="doctor">Doctor</option>
-            <option value="nurse">Nurse</option>
-          </select>   
-        </div>
-
-        <div class="form-group">
-          <label>Nama Lengkap *</label>
-          <input type="text" id="nama" name="nama" required>
-        </div>
-
-        <div class="form-group" id="doctorFields" style="display:none;">
-          <label>Spesialis</label>
-          <input type="text" id="spesialis" name="spesialis">
-        </div>
-
-        <div class="form-group" id="nurseFields" style="display:none;">
-          <label>Shift</label>
-          <input type="text" id="shift" name="shift">
-        </div>
-
-        <div class="form-group">
-          <label>No HP</label>
-          <input type="text" id="no_hp" name="no_hp">
-        </div>
-
         <div class="form-actions">
           <button type="button" class="btn btn-secondary" onclick="closeModal()">Batal</button>
           <button type="submit" class="btn btn-primary" id="submitBtn">Simpan</button>
@@ -545,12 +516,7 @@
       const userId = document.getElementById('userId').value;
       const formData = {
         username: document.getElementById('username').value,
-        password: document.getElementById('password').value,
-        tipe: document.getElementById('tipe').value,
-        nama: document.getElementById('nama').value,
-        spesialis: document.getElementById('spesialis').value,
-        shift: document.getElementById('shift').value,
-        no_hp: document.getElementById('no_hp').value
+        password: document.getElementById('password').value
       };
 
       try {
@@ -599,16 +565,6 @@
         closeModal();
       }
     }
-
-    document.getElementById('tipe').addEventListener('change', function () {
-    const tipe = this.value;
-
-    document.getElementById('doctorFields').style.display =
-      tipe === 'doctor' ? 'block' : 'none';
-
-    document.getElementById('nurseFields').style.display =
-      tipe === 'nurse' ? 'block' : 'none';
-    });
 
     // Load users saat halaman dimuat
     loadUsers();
