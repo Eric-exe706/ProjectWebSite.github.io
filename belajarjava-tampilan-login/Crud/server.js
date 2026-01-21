@@ -214,19 +214,6 @@ app.put('/api/users/:id', requireLogin, async (req, res) => {
       params = [username, userId];
     }
 
-    if (tipe === 'doctor') {
-      await promisePool.execute(
-        'UPDATE doctor SET nama = ?, spesialis = ?, no_hp = ? WHERE id_user = ?',
-        [nama, spesialis, no_hp, userId]
-      );
-    } 
-    else if (tipe === 'nurse') {
-      await promisePool.execute(
-        'UPDATE nurse SET nama = ?, shift = ?, no_hp = ? WHERE id_user = ?',
-        [nama, shift, no_hp, userId]
-      );
-    }
-
     const [result] = await promisePool.execute(query, params);
 
     if (result.affectedRows > 0) {
@@ -237,6 +224,44 @@ app.put('/api/users/:id', requireLogin, async (req, res) => {
   } catch (error) {
     console.error('Error updating user:', error);
     res.status(500).json({ success: false, message: 'Gagal mengupdate user' });
+  }
+});
+
+app.put('/api/doctor/:id', requireLogin, async (req, res) => {
+  const doctorId = req.params.id;
+  const { nama, spesialis, no_hp } = req.body;
+
+  const [result] = await promisePool.execute(
+    'UPDATE doctor SET nama = ?, spesialis = ?, no_hp = ? WHERE id_dokter = ?',
+    [nama, spesialis, no_hp, doctorId]
+  );
+
+  if (result.affectedRows === 0) {
+    return res.status(404).json({ success: false });
+  }
+
+  res.json({ success: true, message: 'Doctor diupdate' });
+});
+
+
+app.put('/api/nurse/:id', requireLogin, async (req, res) => {
+  const nurseId = req.params.id;
+  const { nama, shift, no_hp } = req.body;
+
+  try {
+    const [result] = await promisePool.execute(
+      'UPDATE nurse SET nama = ?, shift = ?, no_hp = ? WHERE id_nurse = ?',
+      [nama, shift, no_hp, nurseId]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ success: false, message: 'Nurse tidak ditemukan' });
+    }
+
+    return res.json({ success: true, message: 'Nurse berhasil diupdate' });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ success: false });
   }
 });
 

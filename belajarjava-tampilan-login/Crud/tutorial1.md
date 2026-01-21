@@ -488,4 +488,29 @@ $env:PORT = 5000; npm start
 - Perubahan tidak terlihat? Pastikan Anda memuat ulang halaman browser, atau kosongkan cache.
 - Error “module not found” → pastikan sudah menjalankan `npm install` di folder proyek yang benar.
 
+
+## 12)
+CREATE TABLE dokter (
+  id_dokter INT AUTO_INCREMENT PRIMARY KEY,
+  id_user INT,
+  nama VARCHAR(100),
+  spesialis VARCHAR(100),
+  no_hp VARCHAR(15),
+  FOREIGN KEY (id_user)
+    REFERENCES user(id_user)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+CREATE TABLE nurse (
+  id_nurse INT AUTO_INCREMENT PRIMARY KEY,
+  id_user INT,
+  nama VARCHAR(100),
+  shift VARCHAR(50),
+  no_hp VARCHAR(15),
+  FOREIGN KEY (id_user)
+    REFERENCES user(id_user)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
 Selamat mencoba! 🎉

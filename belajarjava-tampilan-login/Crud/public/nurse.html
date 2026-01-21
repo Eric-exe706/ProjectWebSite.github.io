@@ -36,6 +36,7 @@
             <td>${n.shift}</td>
             <td>${n.no_hp}</td>
             <button onclick="deleteNurse(${n.id_nurse})">Hapus</button>
+            <button onclick="editNurse(${n.id_nurse})">Edit</button>
           </tr>
         `;
       });
@@ -45,6 +46,25 @@
 
   await fetch(`/api/nurse/${id}`, { method: 'DELETE' });
   alert('Nurse dihapus');
+}
+async function editNurse(id) {
+  const nama = prompt('Nama:');
+  if (nama === null) return;
+
+  const shift = prompt('Shift:');
+  if (shift === null) return;
+
+  const no_hp = prompt('No HP:');
+  if (no_hp === null) return;
+
+  await fetch(`/api/nurse/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nama, shift, no_hp })
+  });
+
+  alert('Nurse diupdate');
+  loadNurse(currentUserId);
 }
 
     loadNurse();

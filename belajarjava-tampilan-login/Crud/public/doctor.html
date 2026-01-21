@@ -36,6 +36,7 @@
             <td>${d.spesialis}</td>
             <td>${d.no_hp}</td>
             <button onclick="deleteDoctor(${d.id_dokter})">Hapus</button>
+            <button onclick="editDoctor(${d.id_dokter})">Edit</button>
           </tr>
         `;
       });
@@ -45,6 +46,26 @@
 
   await fetch(`/api/doctor/${id}`, { method: 'DELETE' });
   alert('Doctor dihapus');
+}
+
+async function editDoctor(id) {
+  const nama = prompt('Nama:');
+  if (nama === null) return;
+
+  const spesialis = prompt('spesialis:');
+  if (spesialis === null) return;
+  
+  const no_hp = prompt('No HP:');
+  if (no_hp === null) return;
+
+  await fetch(`/api/doctor/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ nama, spesialis, no_hp })
+  });
+
+  alert('Doctor diupdate');
+  loadDoctor(currentUserId);
 }
 
     loadDoctor();
